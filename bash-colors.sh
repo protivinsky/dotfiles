@@ -5,7 +5,9 @@
 
 
 #color00="31/3f/46"
-color00="1f/1f/1f"
+#color00="1f/1f/1f"
+color00="2b/29/1a"
+color00="22/22/22"
 color01="c3/16/33"
 color02="4c/af/50"
 color03="ef/aa/04"
@@ -21,7 +23,8 @@ color12="49/a1/ff"
 color13="ca/4c/cf"
 color14="46/bd/ca"
 color15="f2/fb/ff"
-color_background="1f/1f/1f" # Base 00
+color_background=$color00 # Base 00
+#color_background="1f/1f/1f" # Base 00
 #color_background="31/3f/46"
 color_foreground="f2/fb/ff"
 
