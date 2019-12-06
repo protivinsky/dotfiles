@@ -2,6 +2,8 @@
 
 load_colors () {
 
+  export DOTFILES_COLOR_SCHEMES=$1
+
   # check parameter and complain if not provided.
   local DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
   source "$DOTFILES_DIR/colors/$1.sh"
