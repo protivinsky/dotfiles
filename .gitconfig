@@ -1,0 +1,9 @@
+[user]
+    name = Tomas Protivinsky
+    email = tomas.protivinsky@gmail.com
+[alias]
+    co = checkout
+    br = branch
+    ci = commit
+    st = status
+

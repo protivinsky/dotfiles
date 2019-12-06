@@ -44,4 +44,3 @@ echo ".bashrc executed."
 # fix for tmux, to display colors correctly
 # alias tmux="TERM=screen-256color-bce tmux"
 
-
