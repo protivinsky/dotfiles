@@ -1,8 +1,12 @@
 #!/bin/sh
 
+foo () {
+  BAR='hello'
+}
+
 load_colors () {
 
-  export DOTFILES_COLOR_SCHEMES=$1
+  DOTFILES_COLOR_SCHEME=$1
 
   # check parameter and complain if not provided.
   local DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -81,7 +85,6 @@ load_colors () {
   unset color_background
 
   echo "Loaded colors $1."
-  echo ""
   
   source $DOTFILES_DIR/colors/colortest.sh
 

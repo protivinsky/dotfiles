@@ -1,8 +1,10 @@
 #!/bin/bash
 
-# don't remember the source
+# https://github.com/jeffkreeftmeijer/appsignal.terminal
 
-color00="1f/1f/1f"
+# but I am overriding the dark color
+color00="22/22/22"
+#color00="31/3f/46"
 color01="c3/16/33"
 color02="4c/af/50"
 color03="ef/aa/04"
@@ -19,4 +21,4 @@ color13="ca/4c/cf"
 color14="46/bd/ca"
 color15="f2/fb/ff"
 color_background=$color00
-color_foreground="f2/fb/ff"
+color_foreground=$color15
