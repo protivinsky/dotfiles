@@ -19,6 +19,8 @@
 source ~/.dotfiles/git-prompt.sh
 source ~/.dotfiles/load-colors.sh
 
+load_colors terminal-sexy
+
 clear
 #cd ~
 
