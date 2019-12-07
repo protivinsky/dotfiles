@@ -1,9 +1,13 @@
 #!/bin/sh
 
-foo () {
-  BAR='hello'
+# list all colors in colors subdirectory
+list_colors() {
+  local DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+  ls $DOTFILES_DIR/colors/ | grep -v colortest.sh | sed s/\.sh//
 }
+  
 
+# load a given color scheme
 load_colors () {
 
   DOTFILES_COLOR_SCHEME=$1

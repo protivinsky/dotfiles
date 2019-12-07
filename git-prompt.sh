@@ -8,13 +8,16 @@
 # License: MIT
 
 
-# Are we on WSL or on Linux?
-# On WSL, calling git.exe is much faster
-if grep -i -q microsoft /proc/version; then
-    GIT_PROGRAM='git.exe'
-else
-    GIT_PROGRAM='git'
-fi
+# # Are we on WSL or on Linux?
+# # On WSL, calling git.exe is much faster
+# if grep -i -q microsoft /proc/version; then
+#     GIT_PROGRAM='git.exe'
+# else
+#     GIT_PROGRAM='git'
+# fi
+
+# Or use git only
+GIT_PROGRAM='git'
 
 
 function git-prompt() {   
