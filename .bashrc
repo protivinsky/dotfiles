@@ -43,7 +43,7 @@ load_colors terminal-sexy
 clear
 #cd ~
 
-export LS_COLORS='ow=01;36;40'
+export LS_COLORS='ow=01;35;40'
 
 ENTRIES_TO_PROMPT=("history -a" "prompt_cmd")
 for NEW_ENTRY in "${ENTRIES_TO_PROMPT[@]}"; do
