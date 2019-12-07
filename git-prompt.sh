@@ -8,17 +8,6 @@
 # License: MIT
 
 
-# # Are we on WSL or on Linux?
-# # On WSL, calling git.exe is much faster
-# if grep -i -q microsoft /proc/version; then
-#     GIT_PROGRAM='git.exe'
-# else
-#     GIT_PROGRAM='git'
-# fi
-
-# Or use git only
-GIT_PROGRAM='git'
-
 
 function git-prompt() {   
     local branch=''
@@ -32,6 +21,19 @@ function git-prompt() {
     local conflict=0
     local changed=0
 
+    # Are we on WSL or on Linux?
+    # On WSL, calling git.exe is much faster
+    local mnt_pattern='^/mnt/'
+    if (grep -i -q microsoft /proc/version) && [[ $(pwd) =~ $mnt_pattern ]]; then
+        local git_program='git.exe'
+    else
+        local git_program='git'
+    fi
+
+    # # Or use git only
+    # GIT_PROGRAM='git'
+
+
     # Get data.
 
     # The 'local' statement needs to be on its own line since or it
@@ -39,7 +41,7 @@ function git-prompt() {
 
     # annoyingly windows git is much faster
     local status_text=''
-    status_text=$($GIT_PROGRAM status --porcelain=v2 --branch 2>/dev/null)
+    status_text=$($git_program status --porcelain=v2 --branch 2>/dev/null)
     if [ ! $? -eq 0 ]
     then
         # Not a Git repository (or some error occured).
@@ -167,6 +169,18 @@ GIT_PROMPT_FETCH_TIMEOUT=300
 
 prompt_cmd () {
     
+    # Are we on WSL or on Linux?
+    # On WSL, calling git.exe is much faster
+    local mnt_pattern='^/mnt/'
+    if (grep -i -q microsoft /proc/version) && [[ $(pwd) =~ $mnt_pattern ]]; then
+        local git_program='git.exe'
+    else
+        local git_program='git'
+    fi
+
+    # # Or use git only
+    # GIT_PROGRAM='git'
+
     local git_status=$(git-prompt)
 
     if [ ! -z "$git_status" ]
@@ -187,7 +201,7 @@ prompt_cmd () {
                 fetched=1
                 git_status="$git_status ..."
                 GIT_PROMPT_FETCH_LAST_TIME=$fetch_now
-                nohup $GIT_PROGRAM fetch --quiet > /dev/null 2>&1 &
+                nohup $git_program fetch --quiet > /dev/null 2>&1 &
             fi 
         fi
 
@@ -197,7 +211,7 @@ prompt_cmd () {
             then
                 git_status="$git_status ..."
                 GIT_PROMPT_FETCH_LAST_TIME=$fetch_now
-                nohup $GIT_PROGRAM fetch --quiet > /dev/null 2>&1 &
+                nohup $git_program fetch --quiet > /dev/null 2>&1 &
             fi
         fi
     fi

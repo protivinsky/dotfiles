@@ -1,5 +1,9 @@
 # TO DO
 
+- rename dotfiles w/o dots
+    - maybe not
+- create install script
+
 - install.sh for copying dotfiles, possibly with repointing in bashrc
 - message in command prompt?
 - separate command prompt and git status?

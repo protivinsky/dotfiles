@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# Script is loosely based on:
+# 
+# base16-shell (https://github.com/chriskempson/base16-shell)
+# Base16 Shell template by Chris Kempson (http://chriskempson.com)
+
+
 # list all colors in colors subdirectory
 list_colors() {
   local DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
