@@ -22,8 +22,6 @@ else
     DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 fi
 
-echo "DOTFILES_DIR = $DOTFILES_DIR"
-
 source $DOTFILES_DIR/git-prompt.sh
 source $DOTFILES_DIR/load-colors.sh
 
@@ -32,14 +30,12 @@ alias mc='mc --skin=darkfar'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
-alias ls="ls --color"
+alias ls='ls --color'
 
-# I need to fix diff2html -- as I cannot send the file to browser easily
-diff2html() {
-    # I should check that --file is not in parameters...
-    diff2html --file=/mnt/d/temp/diff.html $@
-    # /mnt/c/Program\ Files/Opera/launcher.exe file:///D:/temp/diff.html
-}
+# override diff2html if we are on wsl
+if grep -i -q microsoft /proc/version; then
+    alias diff2html='/mnt/c/Program\ Files/nodejs/node.exe C:\\Users\\thomas\\AppData\\Roaming\\npm\\node_modules\\diff2html-cli\\bin\\diff2html'
+fi
 
 
 load_colors terminal-sexy
