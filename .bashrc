@@ -45,6 +45,10 @@ clear
 
 export LS_COLORS='ow=01;35;40'
 
+# get rid of trailing white spaces or semicolons
+PROMPT_COMMAND=$(echo "$PROMPT_COMMAND" | sed 's/[; \t]*$//')
+# echo "PROMPT_COMMAND = $PROMPT_COMMAND"
+
 ENTRIES_TO_PROMPT=("history -a" "prompt_cmd")
 for NEW_ENTRY in "${ENTRIES_TO_PROMPT[@]}"; do
     if [[ -z "${PROMPT_COMMAND:+x}" ]]; then
@@ -52,14 +56,15 @@ for NEW_ENTRY in "${ENTRIES_TO_PROMPT[@]}"; do
     else
         case ";${PROMPT_COMMAND};" in
             *";${NEW_ENTRY};"*)
-                # echo "PROMPT_COMMAND already contains: $new_entry"
+                # echo "PROMPT_COMMAND already contains: $NEW_ENTRY"
                 :;;
             *)
                 PROMPT_COMMAND="${PROMPT_COMMAND};${NEW_ENTRY}"
-                # echo "PROMPT_COMMAND does not contain: $new_entry"
+                # echo "PROMPT_COMMAND does not contain: $NEW_ENTRY"
                 ;;
         esac
-    fi
+    fi    
+    # echo "PROMPT_COMMAND = $PROMPT_COMMAND"
 done
 
 unset ENTRIES_TO_PROMPT
