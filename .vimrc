@@ -15,3 +15,6 @@ map <C-t><right> :tabn<cr>
 
 set splitbelow
 
+autocmd StdinReadPre * let g:isReadingFromStdin = 1
+autocmd VimEnter * if !argc() && !exists('g:isReadingFromStdin') | NERDTree | endif
+
