@@ -13,3 +13,5 @@ au TabLeave * let g:lasttab = tabpagenr()
 map <C-t><left> :tabp<cr>
 map <C-t><right> :tabn<cr>
 
+set splitbelow
+
