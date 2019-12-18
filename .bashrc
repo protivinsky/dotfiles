@@ -33,14 +33,6 @@ alias ....='cd ../../..'
 alias ls='ls --color'
 alias c=clear
 
-# some messy ad hoc customization for better colors on EC2 instance
-#       - having root here doesn't make any sense, right?
-if [ $(whoami) == 'ubuntu' ]; then
-    alias tmux='tmux set -g status-bg white; tmux'
-elif [ $(whoami) == 'root' ]; then
-    alias tmux='tmux set -g status-bg green; tmux set -g -w window-status-current-bg red; tmux'
-fi
-
 # override diff2html if we are on wsl
 if grep -i -q microsoft /proc/version; then
     alias diff2html='/mnt/c/Program\ Files/nodejs/node.exe C:\\Users\\thomas\\AppData\\Roaming\\npm\\node_modules\\diff2html-cli\\bin\\diff2html'
