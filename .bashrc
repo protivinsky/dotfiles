@@ -31,6 +31,15 @@ alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 alias ls='ls --color'
+alias c=clear
+
+# some messy ad hoc customization for better colors on EC2 instance
+#       - having root here doesn't make any sense, right?
+if [ $(whoami) == 'ubuntu' ]; then
+    alias tmux='tmux set -g status-bg white; tmux'
+elif [ $(whoami) == 'root' ]; then
+    alias tmux='tmux set -g status-bg green; tmux set -g -w window-status-current-bg red; tmux'
+fi
 
 # override diff2html if we are on wsl
 if grep -i -q microsoft /proc/version; then
@@ -83,7 +92,7 @@ stty -ixon
 # export SPARK_HOME=/opt/spark
 # export HADOOP_HOME=/opt/spark
 # export HADOOP_CONF_DIR=/etc/hadoop/conf
-# export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/jre
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/jre
 # export PATH=/opt/spark/bin:$PATH
 
 # # if there is a local bashrc file, load it
