@@ -216,6 +216,18 @@ prompt_cmd () {
         fi
     fi
 
-    PS1="\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\] ${git_status}\n\$ "
+    # I need at least basic info about venv - do the usual
+    if [ ! -z "$VIRTUAL_ENV" ]; then
+        local venv_prompt="\e[0;37m[${VIRTUAL_ENV##*/}]\e[0m "
+    else
+        local venv_prompt=""
+    fi
+
+    PS1="\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\] ${git_status}\n${venv_prompt}\$ "
 }
+
+
+
+
+
 
