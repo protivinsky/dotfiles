@@ -22,5 +22,15 @@ for f in $files; do
     ln -sf "$DOTFILES_DIR/$f" "$hf"
 done
 
+# and install my favourite vim plugins
+if [ ! -d $HOME/.vim/pack/vendor/start/nerdtree ]; then
+    git clone https://github.com/scrooloose/nerdtree.git $HOME/.vim/pack/vendor/start/nerdtree
+    vim -u NONE -c "helptags $HOME/.vim/pack/vendor/start/nerdtree/doc" -c q
+fi
+
+if [ ! -d $HOME/.vim/pack/vendor/start/vimteractive ]; then
+    git clone https://github.com/protivinsky/vimteractive.git $HOME/.vim/pack/vendor/start/vimteractive
+fi
+
 echo "Dotfiles were installed."
 
