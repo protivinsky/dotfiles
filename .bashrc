@@ -21,7 +21,7 @@ alias mc='mc --skin=darkfar'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
-alias ls='ls --color'
+alias ls='ls -F --color'
 alias la='ls -a'
 alias ll='ls -l'
 alias c=clear
