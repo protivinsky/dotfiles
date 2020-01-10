@@ -18,3 +18,11 @@ set splitbelow
 autocmd StdinReadPre * let g:isReadingFromStdin = 1
 autocmd VimEnter * if !argc() && !exists('g:isReadingFromStdin') | NERDTree | endif
 
+if has('unnamedplus')
+    set clipboard=unnamedplus
+endif
+
+if filereadable("~/.local/.vimrc")
+    source ~/.local/.vimrc
+endif
+
