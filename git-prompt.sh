@@ -120,20 +120,22 @@ function git-prompt() {
         status="untracked"
     fi
 
-    if (( $conflict > 0 ))
-    then
-        flags="$flags !$conflict"
-        status="conflict"
-    fi
-
     if (( $ahead > 0 ))
     then
         flags="$flags >$ahead"
+        status="different"
     fi
 
     if (( $behind > 0 ))
     then
         flags="$flags <$behind"
+        status="different"
+    fi
+
+    if (( $conflict > 0 ))
+    then
+        flags="$flags !$conflict"
+        status="conflict"
     fi
 
     local text="$branch$flags"
@@ -145,10 +147,7 @@ function git-prompt() {
         ok)
             local colorcode="35"
             ;;
-        changed)
-            local colorcode="36"
-            ;;
-        untracked)
+        changed | untracked | different)
             local colorcode="36"
             ;;
         conflict)
@@ -217,7 +216,7 @@ prompt_cmd () {
     fi
 
     # I need at least basic info about venv - do the usual
-    if [ ! -z "$VIRTUAL_ENV" ]; then
+    if [[ $VIRTUAL_ENV ]]; then
         local venv_prompt="\e[0;37m[${VIRTUAL_ENV##*/}]\e[0m "
     else
         local venv_prompt=""

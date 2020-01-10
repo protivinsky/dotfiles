@@ -68,13 +68,6 @@ stty -ixon
 
 #alias python=python3
 
-# # should I add some conditioning if I am on wsl or cygwin?
-# export SPARK_HOME=/opt/spark
-# export HADOOP_HOME=/opt/spark
-# export HADOOP_CONF_DIR=/etc/hadoop/conf
-export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/jre
-# export PATH=/opt/spark/bin:$PATH
-
 # if there is a local bashrc file, load it
 if [ -f $HOME/.local/.bashrc ] && [ -r $HOME/.local/.bashrc ]; then
     source $HOME/.local/.bashrc
