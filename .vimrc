@@ -22,7 +22,7 @@ if has('unnamedplus')
     set clipboard=unnamedplus
 endif
 
-if filereadable("~/.local/.vimrc")
+if filereadable($HOME."/.local/.vimrc")
     source ~/.local/.vimrc
 endif
 
