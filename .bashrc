@@ -39,6 +39,9 @@ clear
 
 export LS_COLORS='ow=01;35;40'
 
+# set vim as manpager, with improved formatting
+export MANPAGER="/bin/sh -c \"col -b | grep -A1 . | grep -v \"^--$\" | vim -c 'set ft=man ts=8 foldmethod=indent foldlevel=20 nomod nolist nonu noma' - --not-a-term\""
+
 # get rid of trailing white spaces or semicolons
 PROMPT_COMMAND=$(echo "$PROMPT_COMMAND" | sed 's/[; \t]*$//')
 ENTRIES_TO_PROMPT=("history -a" "prompt_cmd")
