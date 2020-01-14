@@ -1,5 +1,6 @@
 colorscheme dim
 set number
+set hlsearch
 set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab
 autocmd FilterWritePre * if &diff | setlocal wrap< | endif
 
