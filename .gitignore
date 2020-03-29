@@ -1,4 +1,5 @@
 *~
 *.sw?
 .vim/pack
+.vim/.netrwhist
 
