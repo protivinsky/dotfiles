@@ -217,7 +217,10 @@ prompt_cmd () {
 
     # I need at least basic info about venv - do the usual
     if [ ! -z "$VIRTUAL_ENV" ]; then
-        local venv_prompt="\[\e[37m\][$(echo $VIRTUAL_ENV | sed 's/^.*[/\\]//')]\[\e[0m\] "
+        local virtual_env_dirname=$(dirname "$VIRTUAL_ENV")
+        local virtual_env_label=$(basename "$virtual_env_dirname")/$(basename "$VIRTUAL_ENV")
+        local venv_prompt="\[\e[37m\][$virtual_env_label]\[\e[0m\] "
+        # local venv_prompt="\[\e[37m\][$(echo $VIRTUAL_ENV | sed 's/^.*[/\\]//')]\[\e[0m\] "
     else
         local venv_prompt=""
     fi

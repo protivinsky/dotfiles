@@ -1,9 +1,10 @@
 [user]
     name = Tomas Protivinsky
-    email = tomas.protivinsky@gmail.com
+    email = tomas.protivinsky@gresearch.co.uk
 [alias]
     co = checkout
     br = branch
     ci = commit
     st = status
+	logline = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
 
