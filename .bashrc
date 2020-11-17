@@ -17,7 +17,7 @@ source $DOTFILES_DIR/git-prompt.sh
 source $DOTFILES_DIR/load-colors.sh
 
 # or do I want aliases in a separate file? maybe later
-alias mc='mc --skin=darkfar'
+alias mc='mc --skin=gotar'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
