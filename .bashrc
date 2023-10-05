@@ -35,7 +35,7 @@ if grep -i -q microsoft /proc/version; then
 fi
 
 load_colors --quiet terminal-sexy
-clear
+# clear
 
 export LS_COLORS='ow=01;35;40'
 
@@ -78,4 +78,14 @@ fi
 
 # fix for tmux, to display colors correctly
 # alias tmux="TERM=screen-256color-bce tmux"
+
+# OpenAI API key
+export OPENAI_API_KEY=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
+
+# DotNET -> F#
+export DOTNET_ROOT=$HOME/.dotnet
+export PATH=$PATH:$HOME/.dotnet:$HOME/.dotnet/tools
+
+# TexLive path
+export PATH="/usr/local/texlive/2023/bin/x86_64-linux/:$PATH"
 
