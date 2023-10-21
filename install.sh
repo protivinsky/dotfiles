@@ -25,6 +25,10 @@ mkdir -p $XDG_CONFIG_HOME
 
 set -eo pipefail
 
+if [ -z $DOTFILES_FORCE ]; then
+    DOTFILES_FORCE=false
+fi
+
 
 # Depending on the system, we may have curl or wget but not both -- so try to
 # figure it out.
@@ -69,48 +73,35 @@ ok () {
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         return 0
     fi
+    echo
     printf "${RED}Exiting.${UNSET}\n"
     return 1
 }
 
 
 function copy_dotfiles() {
-    set -x
-
     ok "Copies over all the dotfiles here to your home directory.
     - A backup will be made in $BACKUP_DIR
     - List of files that will be copied is in 'include.files'
     - Prompts again before actually running to make sure!"
 
-    function actually_copy_dotfiles() {
-        files=".bashrc .bash_profile .config/.dircolors .config/git-prompt.sh"
-        for f in $files; do
-            hf=$HOME/$f
-            if [ -r $hf ] && [ ! -h $hf ]; then
-                # file already exists at $HOME and is not a symlink
-                # copy it into .back with timestamp
-                if [ ! -d $HOME/.back ]; then
-                    mkdir $HOME/.back
-                fi
-                echo "Moving: $hf -> $HOME/.back"
-                mv $hf $HOME/.back/$f.$(date '+%Y-%m-%d_%H-%M-%S')
+    files=".bashrc .bash_profile .config/.dircolors .config/git-prompt.sh"
+    for f in $files; do
+        hf=$HOME/$f
+        if [ -r $hf ] && [ ! -h $hf ]; then
+            # file already exists at $HOME and is not a symlink
+            # copy it into .back with timestamp
+            if [ ! -d $HOME/.back ]; then
+                mkdir $HOME/.back
             fi
-            echo "Creating symlink: $hf --> $DOTFILES_DIR/home/$f"
-            ln -sf "$DOTFILES_DIR/home/$f" "$hf"
-        done
-        unset f
-        unset files
-    }
-
-    if [ $DOTFILES_FORCE == "true" ]; then
-        actually_copy_dotfiles
-    else
-        read -p "This may overwrite existing files in your home directory. Backups will be put in $BACKUP_DIR. Are you sure? (y/n) " -n 1;
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            actually_copy_dotfiles
+            echo "Moving: $hf -> $HOME/.back"
+            mv $hf $HOME/.back/$f.$(date '+%Y-%m-%d_%H-%M-%S')
         fi
-    fi
-    unset actually_copy_dotfiles    
+        echo "Creating symlink: $hf --> $DOTFILES_DIR/home/$f"
+        ln -sf "$DOTFILES_DIR/home/$f" "$hf"
+    done
+    unset f
+    unset files 
 }
 
 
@@ -123,7 +114,7 @@ function install_tmux() {
 
 
 function install_neovim() {
-    ok "Downloads neovim tarball from https://github.com/neovim/neovim, install into $HOME/opt/bin/neovim"
+    ok "Downloads neovim tarball from https://github.com/neovim/neovim, install into $LOCAL_OPT/neovim and create symlink $LOCAL_BIN/nvim"
     if [[ $OSTYPE == darwin* ]]; then
         download https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-macos.tar.gz nvim-macos.tar.gz
         tar -xzf nvim-macos.tar.gz
@@ -151,13 +142,14 @@ while [[ "$#" -gt 0 ]]; do
             shift
             ;;
         --nvim|--neovim)
-            install_tmux
+            install_neovim
             shift
             ;;
         --all)
             copy_dotfiles
             install_tmux
             install_neovim
+            shift
             ;;
         *) 
             echo "Unknown option: $1"
