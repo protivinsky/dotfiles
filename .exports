@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+if command -v nvim > /dev/null; then
+    export EDITOR="nvim"
+else
+    export EDITOR="vim"
+fi
+
+export LC_ALL="en_US.UTF-8"
+export LANG="en_US.UTF-8"
+export LANGUAGE="en_US.UTF-8"
+
+export HISTSIZE='32768';
+export HISTFILESIZE="${HISTSIZE}";
+export HISTCONTROL='ignoreboth';
+
+# in tmux, highlight rather than italicize
+export LESS_TERMCAP_so=$'\E[30;43m'
+export LESS_TERMCAP_se=$'\E[39;49m'
+
+# set vim as manpager, with improved formatting
+export MANPAGER="bash -c \"col -b | cat -s | vim -c 'set ft=man ts=8 foldmethod=indent foldlevel=20 nomod nolist nonu noma' - --not-a-term\""
+

@@ -1,0 +1,27 @@
+[user]
+    name = Tomas Protivinsky
+    email = tomas.protivinsky@gmail.com
+
+[alias]
+    co = checkout
+    br = branch
+    ci = commit
+    st = status
+	logline = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+
+# See https://git-scm.com/docs/git-config#Documentation/git-config.txt-coresharedRepository
+[core]
+	sharedRepository = true
+
+# Default for newer versions of git.
+[color]
+	ui = auto
+
+# See https://git-scm.com/docs/git-config#Documentation/git-config.txt-pushdefault
+[push]
+	default = simple
+
+# This diff style is needed for the nvim mergetool plugin to work well with
+# 3-way merge conflicts
+[merge]
+	conflictStyle = diff3
