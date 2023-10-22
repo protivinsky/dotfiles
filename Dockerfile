@@ -56,7 +56,6 @@ ADD install.sh .
 # .path \
 # .
 
-# RUN ./setup.sh --dotfiles
 # RUN ./setup.sh --install-tmux
 # RUN ./setup.sh --install-neovim
 
@@ -68,5 +67,9 @@ RUN git clone https://github.com/protivinsky/omoment.git
 RUN git clone https://github.com/protivinsky/reportree.git
 
 RUN sudo chown -R joker:joker .
+
+# # do the dotfiles setup
+ENV DOTFILES_FORCE=1
+# RUN dotfiles/install.sh --all
 
 CMD ["/bin/bash"]

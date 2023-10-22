@@ -124,5 +124,5 @@ function venv-prompt() {
 
 source $HOME/.config/git-prompt.sh
 
-PS1="\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\] \$(git-prompt)\n\$(venv-prompt)\$ "
+PS1="\[\e]0;\w\a\]\n\[\e[37m\]\u@\h \[\e[33m\]\w\[\e[0m\] \$(git-prompt)\n\$(venv-prompt)\$ "
 

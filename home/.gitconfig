@@ -1,0 +1,47 @@
+# global .gitconfig file
+[user]
+    name = Tomas Protivinsky
+    email = tomas.protivinsky@gmail.com
+
+[alias]
+    aa = add --all
+    b = branch -v
+    bd = branch -d
+    bD = branch -D
+    br = branch
+    ci = commit
+    cim = commit -m
+    cima = commit -am
+    clr = rm -r --cached
+    co = checkout
+    cp = cherry-pick -x
+    d = diff -w
+    dc = diff --cached
+    nb = checkout -b
+    lg = log --graph --date=relative --pretty=tformat:'%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%an %ad)%Creset' -20
+    oups = commit --amend --no-edit
+    r = remote -v
+    rh = reset --hard
+    st = status -sb
+    t = tag -l
+    unstage = reset HEAD
+    uncommit = reset --soft HEAD^
+    pushfl = push --force-with-lease
+	logline = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+
+# See https://git-scm.com/docs/git-config#Documentation/git-config.txt-coresharedRepository
+[core]
+	sharedRepository = true
+
+# Default for newer versions of git.
+[color]
+	ui = auto
+
+# See https://git-scm.com/docs/git-config#Documentation/git-config.txt-pushdefault
+[push]
+	default = simple
+
+# This diff style is needed for the nvim mergetool plugin to work well with
+# 3-way merge conflicts
+[merge]
+	conflictStyle = diff3

@@ -24,11 +24,7 @@ mkdir -p $LOCAL_OPT
 mkdir -p $XDG_CONFIG_HOME
 
 set -eo pipefail
-
-if [ -z $DOTFILES_FORCE ]; then
-    DOTFILES_FORCE=false
-fi
-
+sudo apt-get update
 
 # Depending on the system, we may have curl or wget but not both -- so try to
 # figure it out.
@@ -65,7 +61,7 @@ add_line_to_file () {
 ok () {
     # If the DOTFILES_FORCE=true env var was set, then no need to ask, we want
     # to always say yes
-    if [ $DOTFILES_FORCE = "true" ]; then
+    if [[ -v DOTFILES_FORCE && $DOTFILES_FORCE -eq 1 ]]; then
         return 0
     fi
     printf "${GREEN}$1${UNSET}\n"
@@ -79,13 +75,31 @@ ok () {
 }
 
 
+clone_repo() {
+    # make it more robust to transient network issues (seeing many of these...)
+    MAX_RETRIES=5
+    COUNT=0
+
+    while [ $COUNT -lt $MAX_RETRIES ]; do
+        git clone $1 $2 && break
+        COUNT=$((COUNT + 1))
+        sleep 1  # waiting for 15 seconds before retrying
+    done
+
+    if [ $COUNT -eq $MAX_RETRIES ]; then
+        echo "Failed to clone after $MAX_RETRIES attempts."
+        exit 1
+    fi
+}
+
+
 function copy_dotfiles() {
     ok "Copies over all the dotfiles here to your home directory.
     - A backup will be made in $BACKUP_DIR
     - List of files that will be copied is in 'include.files'
     - Prompts again before actually running to make sure!"
 
-    files=".bashrc .bash_profile .config/.dircolors .config/git-prompt.sh"
+    files=".bashrc .bash_profile .gitconfig .config/.dircolors .config/git-prompt.sh"
     for f in $files; do
         hf=$HOME/$f
         if [ -r $hf ] && [ ! -h $hf ]; then
@@ -108,8 +122,10 @@ function copy_dotfiles() {
 function install_tmux() {
     ok "Install tmux and setup its config"
     sudo apt-get install -y tmux
-    mkdir -p ~/.config/tmux
+    mkdir -p $HOME/.config/tmux
     ln -sf $DOTFILES_DIR/home/.config/tmux/tmux.conf $HOME/.config/tmux/tmux.conf
+    mkdir -p $HOME/.tmux/plugins
+    clone_repo https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
 }
 
 
@@ -128,11 +144,33 @@ function install_neovim() {
     ln -sf $LOCAL_OPT/neovim/bin/nvim $LOCAL_BIN/nvim
     printf "${YELLOW}- installed neovim to $LOCAL_OPT/neovim${UNSET}\n"
     printf "${YELLOW}- created symlink $LOCAL_BIN/nvim${UNSET}\n"
+
+    # install kickstart nvim config
+    clone_repo http://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
+}
+
+
+function install_python() {
+    ok "Installing python3 and python3-venv and create symlink $LOCAL_BIN/python"
+    sudo apt-get install -y python3 python3-venv
+    printf "${YELLOW}- installed python3 and python3-venv ${UNSET}\n"
+    ln -sf $(which python3) $LOCAL_BIN/python
+    printf "${YELLOW}- created symlink $LOCAL_BIN/python${UNSET}\n"
+}
+
+
+function install_apt() {
+    ok "Installing additional packages"
+    sudo apt-get install -y build-essential wget curl htop rsync
 }
 
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
+        -y|--yes) 
+            DOTFILES_FORCE=true
+            shift
+            ;;
         --dotfiles) 
             copy_dotfiles
             shift
@@ -145,10 +183,20 @@ while [[ "$#" -gt 0 ]]; do
             install_neovim
             shift
             ;;
+        --python)
+            install_python
+            shift
+            ;;
+        --apt)
+            install_apt
+            shift
+            ;; 
         --all)
             copy_dotfiles
             install_tmux
             install_neovim
+            install_python
+            install_apt
             shift
             ;;
         *) 
@@ -157,3 +205,6 @@ while [[ "$#" -gt 0 ]]; do
             ;;
     esac
 done
+
+
+source $HOME/.bashrc
