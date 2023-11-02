@@ -127,7 +127,18 @@ function install_tmux() {
     
     # try to fix the catpuccin plugin, to get better names in tabs
     sed -i "s|local text=\"\$(get_tmux_option \"@catppuccin_window_current_text\" \"#{b:pane_current_path}\")\"|local text=\"\$(get_tmux_option \"@catppuccin_window_current_text\" \"#W [#\(echo '#{pane_current_path}' \| rev \| cut -d'/' -f-2 \| rev\)]\")\"|g" .config/tmux/plugins/tmux/window/window_current_format.sh
-    printf "${YELLOW}- patching the catpuccin/tmux plugin win titles${UNSET}\n"
+    printf "${YELLOW}patching the catpuccin/tmux plugin win titles${UNSET}\n"
+
+    # try to fix vim-tmux-navigator for poetry
+    ln -sf $DOTFILES_DIR/home/.config/tmux/plugins/vim-tmux-navigator/is_vim_fixed.sh $HOME/.config/tmux/plugins/vim-tmux-navigator/is_vim_fixed.sh
+    sed -i '2i\
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"\
+"$DIR/is_vim_fixed.sh"\
+is_vim_fixed=$?\
+' .config/tmux/plugins/vim-tmux-navigator/vim-tmux-navigator.tmux
+
+    sed -i 's/\$is_vim/\$is_vim_fixed/g' .config/tmux/plugins/vim-tmux-navigator/vim-tmux-navigator.tmux
+    printf "${YELLOW}patching the christoomey/vim-tmux-navigator for poetry${UNSET}\n"
 }
 
 
@@ -210,6 +221,8 @@ while [[ "$#" -gt 0 ]]; do
             ;;
     esac
 done
+
+printf "${GREEN}Dotfiles installation is complete.${UNSET}\n"
 
 # source $HOME/.bashrc
 
