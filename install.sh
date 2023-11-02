@@ -75,21 +75,18 @@ ok () {
 }
 
 
-clone_repo() {
+clone_if_not_exists() {
     # make it more robust to transient network issues (seeing many of these...)
-    MAX_RETRIES=5
-    COUNT=0
-
-    while [ $COUNT -lt $MAX_RETRIES ]; do
-        git clone $1 $2 && break
-        COUNT=$((COUNT + 1))
-        sleep 1  # waiting for 15 seconds before retrying
-    done
-
-    if [ $COUNT -eq $MAX_RETRIES ]; then
-        echo "Failed to clone after $MAX_RETRIES attempts."
-        exit 1
-    fi
+    if [ ! -d "$2" ]; then
+      # Directory doesn't exist. Clone the repo.
+      git clone "$1" "$2"
+    else
+      # Directory exists. Navigate to it and pull the latest changes.
+      current_dir = $(pwd)
+      cd "$2" || exit
+      git pull origin master
+      cd $current_dir
+    fi 
 }
 
 
@@ -125,7 +122,7 @@ function install_tmux() {
     mkdir -p $HOME/.config/tmux
     ln -sf $DOTFILES_DIR/home/.config/tmux/tmux.conf $HOME/.config/tmux/tmux.conf
     mkdir -p $HOME/.tmux/plugins
-    clone_repo https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
+    clone_if_not_exists https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
 }
 
 
@@ -146,7 +143,7 @@ function install_neovim() {
     printf "${YELLOW}- created symlink $LOCAL_BIN/nvim${UNSET}\n"
 
     # install kickstart nvim config
-    clone_repo http://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
+    clone_if_not_exists http://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
 }
 
 
@@ -161,7 +158,7 @@ function install_python() {
 
 function install_apt() {
     ok "Installing additional packages"
-    sudo apt-get install -y build-essential wget curl htop rsync
+    sudo apt-get install -y build-essential wget curl htop rsync stow
 }
 
 
@@ -193,8 +190,11 @@ while [[ "$#" -gt 0 ]]; do
             ;; 
         --all)
             copy_dotfiles
-            install_tmux
+            if ! command -v tmux > /dev/null 2>&1; then
+              install_tmux; fi
             install_neovim
+            if ! command -v neovim > /dev/null 2>&1; then
+              install_neovim; fi
             install_python
             install_apt
             shift
