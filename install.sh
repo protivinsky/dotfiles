@@ -24,7 +24,7 @@ mkdir -p $LOCAL_OPT
 mkdir -p $XDG_CONFIG_HOME
 
 set -eo pipefail
-sudo apt-get update
+# sudo apt-get update
 
 # Depending on the system, we may have curl or wget but not both -- so try to
 # figure it out.
@@ -82,10 +82,10 @@ clone_if_not_exists() {
       git clone "$1" "$2"
     else
       # Directory exists. Navigate to it and pull the latest changes.
-      current_dir = $(pwd)
+      CURRENT_DIR=$(pwd)
       cd "$2" || exit
       git pull origin master
-      cd $current_dir
+      cd $CURRENT_DIR
     fi 
 }
 
@@ -123,6 +123,11 @@ function install_tmux() {
     ln -sf $DOTFILES_DIR/home/.config/tmux/tmux.conf $HOME/.config/tmux/tmux.conf
     mkdir -p $HOME/.tmux/plugins
     clone_if_not_exists https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
+    $HOME/.tmux/plugins/tpm/bin/install_plugins
+    
+    # try to fix the catpuccin plugin, to get better names in tabs
+    sed -i "s|local text=\"\$(get_tmux_option \"@catppuccin_window_current_text\" \"#{b:pane_current_path}\")\"|local text=\"\$(get_tmux_option \"@catppuccin_window_current_text\" \"#W [#\(echo '#{pane_current_path}' \| rev \| cut -d'/' -f-2 \| rev\)]\")\"|g" .config/tmux/plugins/tmux/window/window_current_format.sh
+    printf "${YELLOW}- patching the catpuccin/tmux plugin win titles${UNSET}\n"
 }
 
 
@@ -196,8 +201,8 @@ while [[ "$#" -gt 0 ]]; do
             if ! command -v neovim > /dev/null 2>&1; then
               install_neovim; fi
             install_python
-            install_apt
-            shift
+            # install_apt
+            exit 1
             ;;
         *) 
             echo "Unknown option: $1"
@@ -206,5 +211,5 @@ while [[ "$#" -gt 0 ]]; do
     esac
 done
 
+# source $HOME/.bashrc
 
-source $HOME/.bashrc
