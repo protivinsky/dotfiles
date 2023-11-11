@@ -10,7 +10,7 @@ RUN apt-get install -y linux-libc-dev && apt-get clean
 RUN apt-get install -y gcc libc6-dev make
 RUN apt-get install -y python3 python3-venv python3-pip
 RUN apt-get install -y cargo
-RUN wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+# RUN wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
 
 # RUN apt-get install -y build-essential
 
@@ -50,8 +50,10 @@ RUN git clone https://github.com/protivinsky/omoment.git
 RUN git clone https://github.com/protivinsky/reportree.git
 
 RUN sudo chown -R joker:joker .
-ENV DOTFILES_FORCE=1
+
 # do the dotfiles setup
-# RUN dotfiles/install.sh --all
+ENV DOTFILES_FORCE=1
+# RUN dotfiles/install.sh --dotfiles --tmux
+RUN dotfiles/install.sh --dotfiles --tmux --node --lazygit --nvims
 
 CMD ["/bin/bash"]
