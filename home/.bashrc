@@ -6,7 +6,7 @@
 # Set PATH to includes user's private bin if it exists
 for dir in $HOME/bin $HOME/.local/bin; do
     if [ -d "$dir" ] ; then
-        PATH="$dir:$PATH"
+        export PATH="$dir:$PATH"
     fi
 done
 unset dir;
@@ -118,11 +118,17 @@ VIRTUAL_ENV_DISABLE_PROMPT=1
 
 function venv-prompt() {
     if [ ! -z "$VIRTUAL_ENV" ]; then
-        echo -ne "\e[37m[$(echo $VIRTUAL_ENV | sed 's|.*/\(.*\)/\(.*\)|\1/\2|')]\e[0m "
+        echo -ne "[$(echo $VIRTUAL_ENV | sed 's|.*/\(.*\)/\(.*\)|\1/\2|')] "
     fi
 }
 
 source $HOME/.config/git-prompt.sh
 
-PS1="\[\e]0;\w\a\]\n\[\e[37m\]\u@\h \[\e[33m\]\w\[\e[0m\] \$(git-prompt)\n\$(venv-prompt)\$ "
+PS1="\[\e[37m\]\u@\h \[\e[33m\]\w\[\e[0m\] \$(git-prompt)\n\[\e[37m\]\$(venv-prompt)\[\e[0m\]\$ "
 
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+. "$HOME/.cargo/env"
+alias lazyvim='NVIM_APPNAME=lazyvim nvim'

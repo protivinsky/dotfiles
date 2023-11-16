@@ -45,3 +45,5 @@
 # 3-way merge conflicts
 [merge]
 	conflictStyle = diff3
+[init]
+	defaultBranch = main
