@@ -2,7 +2,17 @@ FROM ubuntu:latest
 
 SHELL ["/bin/bash", "-c"]
 
-RUN apt-get update && apt-get install -y git wget curl sudo rsync locales vim
+RUN apt-get update && apt-get install -y git wget curl sudo rsync locales vim fzf
+# stuff that I would otherwise install in dotfiles
+RUN apt-get install -y htop stow
+RUN apt-get install -y tmux
+RUN apt-get install -y linux-libc-dev && apt-get clean
+RUN apt-get install -y gcc libc6-dev make
+RUN apt-get install -y python3 python3-venv python3-pip
+RUN apt-get install -y cargo
+# RUN wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+
+# RUN apt-get install -y build-essential
 
 # Locale is set in .bash_profile; needs to be created
 RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment
@@ -32,35 +42,8 @@ RUN mkdir -p $TMPDIR
 # # Don't prompt for user input when using setup.sh
 # ENV DOTFILES_FORCE=true
 
-WORKDIR dotfiles
-ADD home ./home
-ADD install.sh .
-
-# # These apt installs typically take the longest time, so run early before
-# # adding other files, which may otherwise invalidate the cache even though they
-# # are unrelated.
-# ADD apt-installs.txt setup.sh .
-# RUN ./setup.sh --apt-install
-
-# # Now add the rest of the files
-# ADD \
-# .aliases \
-# .bash_profile \
-# .bashrc \
-# .dircolors \
-# .exports \
-# .extra \
-# .functions \
-# .gitconfig \
-# git-prompt.sh \
-# .path \
-# .
-
-# RUN ./setup.sh --install-tmux
-# RUN ./setup.sh --install-neovim
-
-# Switch back to home dir
-WORKDIR /home/joker
+RUN mkdir -p dotfiles
+COPY . dotfiles/
 
 # Create some github repos I can play with and test the tooling
 RUN git clone https://github.com/protivinsky/omoment.git
@@ -68,8 +51,9 @@ RUN git clone https://github.com/protivinsky/reportree.git
 
 RUN sudo chown -R joker:joker .
 
-# # do the dotfiles setup
+# do the dotfiles setup
 ENV DOTFILES_FORCE=1
-# RUN dotfiles/install.sh --all
+# RUN dotfiles/install.sh --dotfiles --tmux
+RUN dotfiles/install.sh --dotfiles --tmux --node --lazygit --nvims
 
 CMD ["/bin/bash"]
