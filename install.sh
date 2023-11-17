@@ -124,6 +124,7 @@ function install_tmux() {
 	clone_if_not_exists https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
 	$HOME/.tmux/plugins/tpm/bin/install_plugins
 
+	# TODO: or shall I just have main own version of these plugins?
 	# try to fix the catpuccin plugin, to get better names in tabs
 	sed -i "s|local text=\"\$(get_tmux_option \"@catppuccin_window_current_text\" \"#{b:pane_current_path}\")\"|local text=\"\$(get_tmux_option \"@catppuccin_window_current_text\" \"#W [#\(echo '#{pane_current_path}' \| rev \| cut -d'/' -f-2 \| rev\)]\")\"|g" .config/tmux/plugins/tmux/window/window_current_format.sh
 	sed -i "s|local text=\"\$(get_tmux_option \"@catppuccin_window_default_text\" \"#{b:pane_current_path}\")\"|local text=\"\$(get_tmux_option \"@catppuccin_window_default_text\" \"#W [#\(echo '#{pane_current_path}' \| rev \| cut -d'/' -f-2 \| rev\)]\")\"|g" .config/tmux/plugins/tmux/window/window_default_format.sh
@@ -133,11 +134,18 @@ function install_tmux() {
 	ln -sf $DOTFILES_DIR/home/.config/tmux/plugins/vim-tmux-navigator/is_vim_fixed.sh $HOME/.config/tmux/plugins/vim-tmux-navigator/is_vim_fixed.sh
 	sed -i '2i\
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"\
-"$DIR/is_vim_fixed.sh"\
-is_vim_fixed=$?\
-' .config/tmux/plugins/vim-tmux-navigator/vim-tmux-navigator.tmux
+is_vim_fixed="$DIR/is_vim_fixed.sh '#{pane_tty}'"\
+' $HOME/.config/tmux/plugins/vim-tmux-navigator/vim-tmux-navigator.tmux
+	sed -i 's/\$is_vim/\$is_vim_fixed/g' $HOME/.config/tmux/plugins/vim-tmux-navigator/vim-tmux-navigator.tmux
 
-	sed -i 's/\$is_vim/\$is_vim_fixed/g' .config/tmux/plugins/vim-tmux-navigator/vim-tmux-navigator.tmux
+	cat <<EOF >>$HOME/.config/tmux/plugins/vim-tmux-navigator/vim-tmux-navigator.tmux
+
+tmux bind-key -n C-Left if-shell "$is_vim_fixed" "send-keys C-Left" "resize-pane -L 5"
+tmux bind-key -n C-Right if-shell "$is_vim_fixed" "send-keys C-Right" "resize-pane -R 5"
+tmux bind-key -n C-Down if-shell "$is_vim_fixed" "send-keys C-Down" "resize-pane -D 5"
+tmux bind-key -n C-Up if-shell "$is_vim_fixed" "send-keys C-Up" "resize-pane -U 5"
+EOF
+
 	printf "${YELLOW}patching the christoomey/vim-tmux-navigator for poetry${UNSET}\n"
 }
 
@@ -158,28 +166,29 @@ function install_neovim() {
 	printf "${YELLOW}- installed neovim to $LOCAL_OPT/neovim${UNSET}\n"
 	printf "${YELLOW}- created symlink $LOCAL_BIN/nvim${UNSET}\n"
 
-	# install kickstart nvim config
-	clone_if_not_exists http://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
+	# install my version of lazyvim starter
+	# clone_if_not_exists http://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
+	clone_if_not_exists https://github.com/protivinsky/lazyvim-starter.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
 	source $HOME/.bashrc
 }
 
 function install_python() {
 	ok "Installing python3 and python3-venv and create symlink $LOCAL_BIN/python"
-	sudo apt-get install -y python3 python3-venv
+	sudo apt-get install -y python3 python3-venv python3-pip
 	printf "${YELLOW}- installed python3 and python3-venv ${UNSET}\n"
 	ln -sf $(which python3) $LOCAL_BIN/python
 	printf "${YELLOW}- created symlink $LOCAL_BIN/python${UNSET}\n"
 }
 
-function install_node() {
-	ok "Installing nodejs and npm via nvm"
-	wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
-	export NVM_DIR="$HOME/.nvm"
-	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
-	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
-	nvm install node
-	printf "${GREEN}nodejs and npm installed.${UNSET}\n"
-}
+# function install_node() {
+# 	ok "Installing nodejs and npm via nvm"
+# 	wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+# 	export NVM_DIR="$HOME/.nvm"
+# 	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
+# 	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+# 	nvm install node
+# 	printf "${GREEN}nodejs and npm installed.${UNSET}\n"
+# }
 
 function install_lazygit() {
 	LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
@@ -189,50 +198,52 @@ function install_lazygit() {
 	rm lazygit.tar.gz lazygit
 }
 
-function install_lunarvim() {
-	if ! command -v nvim >/dev/null 2>&1; then
-		install_neovim
-	fi
-	LV_BRANCH='release-1.3/neovim-0.9' bash <(curl -s https://raw.githubusercontent.com/LunarVim/LunarVim/release-1.3/neovim-0.9/utils/installer/install.sh)
-}
+# function install_lunarvim() {
+# 	if ! command -v nvim >/dev/null 2>&1; then
+# 		install_neovim
+# 	fi
+# 	LV_BRANCH='release-1.3/neovim-0.9' bash <(curl -s https://raw.githubusercontent.com/LunarVim/LunarVim/release-1.3/neovim-0.9/utils/installer/install.sh)
+# }
+#
+# function install_nvchad() {
+# 	if ! command -v nvim >/dev/null 2>&1; then
+# 		install_neovim
+# 	fi
+# 	if [ ! -d $XDG_CONFIG_HOME/nvchad ]; then
+# 		git clone https://github.com/NvChad/NvChad $XDG_CONFIG_HOME/nvchad --depth 1
+# 	fi
+#
+# 	add_line_to_file "alias nvchad='NVIM_APPNAME=nvchad nvim'" $HOME/.local/.bashrc
+# }
 
-function install_nvchad() {
-	if ! command -v nvim >/dev/null 2>&1; then
-		install_neovim
-	fi
-	if [ ! -d $XDG_CONFIG_HOME/nvchad ]; then
-		git clone https://github.com/NvChad/NvChad $XDG_CONFIG_HOME/nvchad --depth 1
-	fi
+# function install_lazyvim() {
+# 	if ! command -v nvim >/dev/null 2>&1; then
+# 		install_neovim
+# 	fi
+# 	if [ ! -d $XDG_CONFIG_HOME/lazyvim ]; then
+# 		git clone https://github.com/LazyVim/starter $XDG_CONFIG_HOME/lazyvim
+# 		rm -rf $XDG_CONFIG_HOME/lazyvim/.git
+# 	fi
+#
+# 	add_line_to_file "alias lazyvim='NVIM_APPNAME=lazyvim nvim'" $HOME/.local/.bashrc
+# }
 
-	add_line_to_file "alias nvchad='NVIM_APPNAME=nvchad nvim'" $HOME/.local/.bashrc
-}
-
-function install_lazyvim() {
-	if ! command -v nvim >/dev/null 2>&1; then
-		install_neovim
-	fi
-	if [ ! -d $XDG_CONFIG_HOME/lazyvim ]; then
-		git clone https://github.com/LazyVim/starter $XDG_CONFIG_HOME/lazyvim
-		rm -rf $XDG_CONFIG_HOME/lazyvim/.git
-	fi
-
-	add_line_to_file "alias lazyvim='NVIM_APPNAME=lazyvim nvim'" $HOME/.local/.bashrc
-}
-
-function install_astrovim() {
-	if ! command -v nvim >/dev/null 2>&1; then
-		install_neovim
-	fi
-	if [ ! -d $XDG_CONFIG_HOME/astrovim ]; then
-		git clone --depth 1 https://github.com/AstroNvim/AstroNvim $XDG_CONFIG_HOME/astrovim
-	fi
-
-	add_line_to_file "alias astrovim='NVIM_APPNAME=astrovim nvim'" $HOME/.local/.bashrc
-}
+# function install_astrovim() {
+# 	if ! command -v nvim >/dev/null 2>&1; then
+# 		install_neovim
+# 	fi
+# 	if [ ! -d $XDG_CONFIG_HOME/astrovim ]; then
+# 		git clone --depth 1 https://github.com/AstroNvim/AstroNvim $XDG_CONFIG_HOME/astrovim
+# 	fi
+#
+# 	add_line_to_file "alias astrovim='NVIM_APPNAME=astrovim nvim'" $HOME/.local/.bashrc
+# }
 
 function install_apt() {
 	ok "Installing additional packages"
-	sudo apt-get install -y build-essential wget curl htop rsync stow
+	sudo apt-get install -y build-essential wget curl htop rsync stow ripgrep fd-find
+	sudo apt-get install -y fzf linux-libc-dev gcc libc6-dev make cargo
+	sudo apt-get install -y libtool-bin autoconf automake cmake doxygen
 }
 
 while [[ "$#" -gt 0 ]]; do
@@ -257,38 +268,8 @@ while [[ "$#" -gt 0 ]]; do
 		install_python
 		shift
 		;;
-	--node)
-		install_node
-		shift
-		;;
 	--lazygit)
 		install_lazygit
-		shift
-		;;
-	--lunarvim)
-		install_lunarvim
-		shift
-		;;
-	--nvchad)
-		install_nvchad
-		shift
-		;;
-	--lazyvim)
-		install_lazyvim
-		shift
-		;;
-	--astrovim)
-		install_astrovim
-		shift
-		;;
-	--nvims)
-		if ! command -v nvim >/dev/null 2>&1; then
-			install_neovim
-		fi
-		install_lazyvim
-		install_astrovim
-		install_nvchad
-		install_lunarvim
 		shift
 		;;
 	--apt)
@@ -297,20 +278,20 @@ while [[ "$#" -gt 0 ]]; do
 		;;
 	--all)
 		copy_dotfiles
+		install_apt
 		if ! command -v tmux >/dev/null 2>&1; then
 			install_tmux
+		fi
+		install_python
+		if ! command -v lazygit >/dev/null 2>&1; then
+			install_lazygit
 		fi
 		if ! command -v nvim >/dev/null 2>&1; then
 			install_neovim
 		fi
-		if ! command -v node >/dev/null 2>&1; then
-			install_node
-		fi
-		if ! command -v lazygit >/dev/null 2>&1; then
-			install_lazygit
-		fi
-		install_python
-		# install_apt
+		# if ! command -v node >/dev/null 2>&1; then
+		# 	install_node
+		# fi
 		exit 1
 		;;
 	*)
