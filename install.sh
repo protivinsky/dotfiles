@@ -12,7 +12,7 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 export PS1=
 
 # VERSIONS
-NVIM_VERSION=0.9.4
+NVIM_VERSION=0.9.5
 
 # PATH TO INSTALL OPT AND BIN
 LOCAL_BIN=$HOME/.local/bin
@@ -256,10 +256,7 @@ while [[ "$#" -gt 0 ]]; do
 		copy_dotfiles
 		shift
 		;;
-	--tmux)
-		install_tmux
-		shift
-		;;
+ 
 	--nvim | --neovim)
 		install_neovim
 		shift

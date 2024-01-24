@@ -28,6 +28,9 @@ export HISTSIZE='32768'
 export HISTFILESIZE="${HISTSIZE}"
 export HISTCONTROL='ignoreboth'
 
+shopt -s histappend
+PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
+
 # in tmux, highlight rather than italicize
 export LESS_TERMCAP_so=$'\E[30;43m'
 export LESS_TERMCAP_se=$'\E[39;49m'
@@ -80,6 +83,11 @@ alias mc='mc --skin=gotar'
 
 alias gsv="vim -c ':Git' -c ':bunload 1'"
 alias glv="vim -c ':DiffviewFileHistory'"
+
+mkcd()
+{
+  mkdir -p $1 && cd $1
+}
 
 # if there is a local bashrc file, load it
 if [ -f $HOME/.local/.bashrc ] && [ -r $HOME/.local/.bashrc ]; then
