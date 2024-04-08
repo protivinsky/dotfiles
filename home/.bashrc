@@ -35,8 +35,11 @@ PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
 export LESS_TERMCAP_so=$'\E[30;43m'
 export LESS_TERMCAP_se=$'\E[39;49m'
 
+export NNN_PLUG='f:finder;o:fzopen;p:preview-tui'
+
 # set vim as manpager, with improved formatting
-export MANPAGER="bash -c \"col -b | cat -s | vim -c 'set ft=man ts=8 foldmethod=indent foldlevel=20 nomod nolist nonu noma' - --not-a-term\""
+export MANROFFOPT="-c"
+export MANPAGER="bash -c \"col -b | cat -s | nvim -c 'set ft=man ts=8 foldmethod=indent foldlevel=20 nomod nolist nonu noma'\""
 
 # =================
 # ===  ALIASES  ===
@@ -66,9 +69,38 @@ alias D="export DISPLAY=:0"
 # View syntax-highlighted files in the current directory, live-filtered by fzf.
 alias v='fzf --preview "bat --color \"always\" {}"'
 
-if command -v nvim >/dev/null; then
-	alias vim=nvim
+# Interactive fuzzy find over history
+bind '"\C-r": "\C-x1\e^\er"'
+bind -x '"\C-x1": __fzf_history';
+
+__fzf_history ()
+{
+__ehc $(history | fzf --tac --tiebreak=index | perl -ne 'm/^\s*([0-9]+)/ and print "!$1"')
+}
+
+__ehc()
+{
+if
+        [[ -n $1 ]]
+then
+        bind '"\er": redraw-current-line'
+        bind '"\e^": magic-space'
+        READLINE_LINE=${READLINE_LINE:+${READLINE_LINE:0:READLINE_POINT}}${1}${READLINE_LINE:+${READLINE_LINE:READLINE_POINT}}
+        READLINE_POINT=$(( READLINE_POINT + ${#1} ))
+else
+        bind '"\er":'
+        bind '"\e^":'
 fi
+}
+
+# fd - cd to selected directory
+fd() {
+  local dir
+  dir=$(find ${1:-.} -path '*/\.*' -prune \
+                  -o -type d -print 2> /dev/null | fzf +m) &&
+  cd "$dir"
+}
+
 
 alias ..="cd .."
 alias ...="cd ../.."
@@ -78,8 +110,6 @@ alias c=clear
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
-
-alias mc='mc --skin=gotar'
 
 alias gsv="vim -c ':Git' -c ':bunload 1'"
 alias glv="vim -c ':DiffviewFileHistory'"
