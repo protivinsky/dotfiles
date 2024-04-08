@@ -116,37 +116,14 @@ function copy_dotfiles() {
 }
 
 function install_tmux() {
-	ok "Install tmux and setup its config"
-	sudo apt-get install -y tmux
-	mkdir -p $HOME/.config/tmux
-	ln -sf $DOTFILES_DIR/home/.config/tmux/tmux.conf $HOME/.config/tmux/tmux.conf
-	mkdir -p $HOME/.tmux/plugins
-	clone_if_not_exists https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
-	$HOME/.tmux/plugins/tpm/bin/install_plugins
-
-	# TODO: or shall I just have main own version of these plugins?
-	# try to fix the catpuccin plugin, to get better names in tabs
-	sed -i "s|local text=\"\$(get_tmux_option \"@catppuccin_window_current_text\" \"#{b:pane_current_path}\")\"|local text=\"\$(get_tmux_option \"@catppuccin_window_current_text\" \"#W [#\(echo '#{pane_current_path}' \| rev \| cut -d'/' -f-2 \| rev\)]\")\"|g" .config/tmux/plugins/tmux/window/window_current_format.sh
-	sed -i "s|local text=\"\$(get_tmux_option \"@catppuccin_window_default_text\" \"#{b:pane_current_path}\")\"|local text=\"\$(get_tmux_option \"@catppuccin_window_default_text\" \"#W [#\(echo '#{pane_current_path}' \| rev \| cut -d'/' -f-2 \| rev\)]\")\"|g" .config/tmux/plugins/tmux/window/window_default_format.sh
-	printf "${YELLOW}patching the catpuccin/tmux plugin win titles${UNSET}\n"
-
-	# try to fix vim-tmux-navigator for poetry
-	ln -sf $DOTFILES_DIR/home/.config/tmux/plugins/vim-tmux-navigator/is_vim_fixed.sh $HOME/.config/tmux/plugins/vim-tmux-navigator/is_vim_fixed.sh
-	sed -i '2i\
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"\
-is_vim_fixed="$DIR/is_vim_fixed.sh '#{pane_tty}'"\
-' $HOME/.config/tmux/plugins/vim-tmux-navigator/vim-tmux-navigator.tmux
-	sed -i 's/\$is_vim/\$is_vim_fixed/g' $HOME/.config/tmux/plugins/vim-tmux-navigator/vim-tmux-navigator.tmux
-
-	cat <<EOF >>$HOME/.config/tmux/plugins/vim-tmux-navigator/vim-tmux-navigator.tmux
-
-tmux bind-key -n C-Left if-shell "$is_vim_fixed" "send-keys C-Left" "resize-pane -L 5"
-tmux bind-key -n C-Right if-shell "$is_vim_fixed" "send-keys C-Right" "resize-pane -R 5"
-tmux bind-key -n C-Down if-shell "$is_vim_fixed" "send-keys C-Down" "resize-pane -D 5"
-tmux bind-key -n C-Up if-shell "$is_vim_fixed" "send-keys C-Up" "resize-pane -U 5"
-EOF
-
-	printf "${YELLOW}patching the christoomey/vim-tmux-navigator for poetry${UNSET}\n"
+        ok "Install tmux and setup its config"
+        sudo apt-get install -y tmux
+        mkdir -p $HOME/.config/tmux
+        ln -sf $DOTFILES_DIR/home/.config/tmux/tmux.conf $HOME/.config/tmux/tmux.conf
+        ln -sf $DOTFILES_DIR/home/.config/tmux/is_vim_fixed.sh $HOME/.config/tmux/is_vim_fixed.sh
+        mkdir -p $HOME/.tmux/plugins
+        clone_if_not_exists https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
+        $HOME/.tmux/plugins/tpm/bin/install_plugins
 }
 
 function install_neovim() {
