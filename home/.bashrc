@@ -20,6 +20,8 @@ else
 	export EDITOR="vim"
 fi
 
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
 export LANGUAGE="en_US.UTF-8"
@@ -93,14 +95,19 @@ else
 fi
 }
 
-# fd - cd to selected directory
-fd() {
-  local dir
-  dir=$(find ${1:-.} -path '*/\.*' -prune \
-                  -o -type d -print 2> /dev/null | fzf +m) &&
-  cd "$dir"
+# do I want to keep this?
+# https://github.com/JohanChane/ranger-quit_cd_wd
+function ranger_wrapper {
+    /usr/bin/env ranger $*
+    local quit_cd_wd_file="$HOME/.cache/ranger/quit_cd_wd"
+    if [ -s "$quit_cd_wd_file" ]; then
+        cd "$(cat $quit_cd_wd_file)"
+        true > "$quit_cd_wd_file"
+    fi
 }
 
+alias ranger='ranger_wrapper'
+alias r='ranger_wrapper'
 
 alias ..="cd .."
 alias ...="cd ../.."
