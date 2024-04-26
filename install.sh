@@ -167,54 +167,6 @@ function install_python() {
 # 	printf "${GREEN}nodejs and npm installed.${UNSET}\n"
 # }
 
-function install_lazygit() {
-	LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
-	curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
-	tar xf lazygit.tar.gz lazygit
-	sudo install lazygit $LOCAL_BIN
-	rm lazygit.tar.gz lazygit
-}
-
-# function install_lunarvim() {
-# 	if ! command -v nvim >/dev/null 2>&1; then
-# 		install_neovim
-# 	fi
-# 	LV_BRANCH='release-1.3/neovim-0.9' bash <(curl -s https://raw.githubusercontent.com/LunarVim/LunarVim/release-1.3/neovim-0.9/utils/installer/install.sh)
-# }
-#
-# function install_nvchad() {
-# 	if ! command -v nvim >/dev/null 2>&1; then
-# 		install_neovim
-# 	fi
-# 	if [ ! -d $XDG_CONFIG_HOME/nvchad ]; then
-# 		git clone https://github.com/NvChad/NvChad $XDG_CONFIG_HOME/nvchad --depth 1
-# 	fi
-#
-# 	add_line_to_file "alias nvchad='NVIM_APPNAME=nvchad nvim'" $HOME/.local/.bashrc
-# }
-
-# function install_lazyvim() {
-# 	if ! command -v nvim >/dev/null 2>&1; then
-# 		install_neovim
-# 	fi
-# 	if [ ! -d $XDG_CONFIG_HOME/lazyvim ]; then
-# 		git clone https://github.com/LazyVim/starter $XDG_CONFIG_HOME/lazyvim
-# 		rm -rf $XDG_CONFIG_HOME/lazyvim/.git
-# 	fi
-#
-# 	add_line_to_file "alias lazyvim='NVIM_APPNAME=lazyvim nvim'" $HOME/.local/.bashrc
-# }
-
-# function install_astrovim() {
-# 	if ! command -v nvim >/dev/null 2>&1; then
-# 		install_neovim
-# 	fi
-# 	if [ ! -d $XDG_CONFIG_HOME/astrovim ]; then
-# 		git clone --depth 1 https://github.com/AstroNvim/AstroNvim $XDG_CONFIG_HOME/astrovim
-# 	fi
-#
-# 	add_line_to_file "alias astrovim='NVIM_APPNAME=astrovim nvim'" $HOME/.local/.bashrc
-# }
 
 function install_apt() {
 	ok "Installing additional packages"
@@ -242,8 +194,8 @@ while [[ "$#" -gt 0 ]]; do
 		install_python
 		shift
 		;;
-	--lazygit)
-		install_lazygit
+	--tmux)
+		install_tmux
 		shift
 		;;
 	--apt)
@@ -257,9 +209,6 @@ while [[ "$#" -gt 0 ]]; do
 			install_tmux
 		fi
 		install_python
-		if ! command -v lazygit >/dev/null 2>&1; then
-			install_lazygit
-		fi
 		if ! command -v nvim >/dev/null 2>&1; then
 			install_neovim
 		fi
