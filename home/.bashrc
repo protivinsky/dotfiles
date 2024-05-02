@@ -95,6 +95,28 @@ else
 fi
 }
 
+# Interactive xdg-open
+__xdg_open()
+{
+    filetoopen=$(fzf)
+    if [ -n "$filetoopen" ] && [ -e "$filetoopen" ]; then
+        echo "Opening \"$filetoopen\""
+        nohup xdg-open "$filetoopen" >/dev/null 2>&1 & disown
+    fi
+}
+
+# Interactive cd
+__cd()
+{
+    dirtocd=$(fd -td | fzf)
+    if [ -n "$dirtocd" ] && [ -e "$dirtocd" ] && [ -d "$dirtocd" ]; then
+        cd $dirtocd
+    fi
+}
+
+bind '"\C-o": "__xdg_open\n"'
+bind '"\C-e": "__cd\n"'
+
 # do I want to keep this?
 # https://github.com/JohanChane/ranger-quit_cd_wd
 function ranger_wrapper {
