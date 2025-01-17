@@ -71,10 +71,13 @@ alias D="export DISPLAY=:0"
 # View syntax-highlighted files in the current directory, live-filtered by fzf.
 alias v='fzf --preview "bat --color \"always\" {}"'
 
-# Interactive fuzzy find over history
-bind '"\C-r": "\C-x1\e^\er"'
-bind -x '"\C-x1": __fzf_history';
+# Add action to copy image to feh
+if command -v feh >/dev/null 2>&1 && command -v xclip >/dev/null 2>&1; then
+  alias feh='feh --action "xclip -selection clipboard -t image/png -i %F"'
+fi
 
+
+# Interactive fuzzy find over history
 __fzf_history ()
 {
 __ehc $(history | fzf --tac --tiebreak=index | perl -ne 'm/^\s*([0-9]+)/ and print "!$1"')
@@ -94,6 +97,27 @@ else
         bind '"\e^":'
 fi
 }
+
+# Define your function that checks for fzf and binds Ctrl+R:
+__dynamic_bind_ctrl_r () {
+  if command -v fzf &>/dev/null; then
+    bind '"\C-r": "\C-x1\e^\er"'
+    bind -x '"\C-x1": __fzf_history'
+    # Optional debug:
+    # echo "[debug] Bound Ctrl-R to fzf."
+  else
+    bind '"\C-r": reverse-search-history'
+    # Optional debug:
+    # echo "[debug] Bound Ctrl-R to built-in reverse-search."
+  fi
+}
+
+# Hook that function into PROMPT_COMMAND:
+if [[ -z "$PROMPT_COMMAND" ]]; then
+  PROMPT_COMMAND="__dynamic_bind_ctrl_r"
+else
+  PROMPT_COMMAND="__dynamic_bind_ctrl_r; $PROMPT_COMMAND"
+fi
 
 # Interactive xdg-open
 __xdg_open()
@@ -134,6 +158,8 @@ alias r='ranger_wrapper'
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
+alias .....="cd ../../../.."
+alias ......="cd ../../../../.."
 
 alias c=clear
 alias grep='grep --color=auto'
